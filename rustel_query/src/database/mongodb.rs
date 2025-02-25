@@ -12,6 +12,9 @@ use crate::models::event::Event;
 
 pub struct MongoRepo {
     db: Database,
+    pub cde_collection: Collection<CDE>,
+    pub tcde_collection: Collection<TCDE>,
+    pub event_collection: Collection<Event>,
 }
 
 impl MongoRepo {
@@ -27,8 +30,11 @@ impl MongoRepo {
             Err(_) => format!("Error loading env variable"),
         };
         let db = client.database(&tel_db_name);
+        let cde_collection = db.collection("cde");
+        let tcde_collection = db.collection("temporal_cde");
+        let event_collection = db.collection("events");
 
-        MongoRepo { db }
+        MongoRepo { db, cde_collection, tcde_collection, event_collection }
     }
 
 
