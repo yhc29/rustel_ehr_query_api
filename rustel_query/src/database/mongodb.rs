@@ -11,12 +11,14 @@ use mongodb::{
 use crate::models::cde::CDE;
 use crate::models::tcde::TCDE;
 use crate::models::event::Event;
+use crate::models::eii::Eii;
 
 pub struct MongoRepo {
     db: Database,
     pub cde_collection: Collection<CDE>,
     pub tcde_collection: Collection<TCDE>,
     pub event_collection: Collection<Event>,
+    pub eii_collection: Collection<Eii>,
 }
 
 impl MongoRepo {
@@ -35,8 +37,9 @@ impl MongoRepo {
         let cde_collection = db.collection("cde");
         let tcde_collection = db.collection("temporal_cde");
         let event_collection = db.collection("events");
+        let eii_collection = db.collection("eii");
 
-        MongoRepo { db, cde_collection, tcde_collection, event_collection }
+        MongoRepo { db, cde_collection, tcde_collection, event_collection, eii_collection }
     }
 
 

@@ -37,6 +37,7 @@ fn index() -> RawHtml<String> {
                 <li><a href="/event/1">/event/1</a> - Get Event by ID</li>
                 <li><a href="/search_events?cde=[[850124],[734045]]&tcde=3">/search_events?cde=[[850124],[734045]]&tcde=3</a> - Search Events by CDE and TCDE</li>
                 <li><a href="/event_detail/1073">/event_detail/1073</a> - Get Event Detail by ID</li>
+                <li><a href="/eii_and?input1=[1]&input2=[112]">/eii_and?input1=[1]&input2=[112]</a> - Get subjects with both Event List 1 and Event List 2</li>
             </ul>
         </body>
     </html>
@@ -57,6 +58,7 @@ fn rocket() -> _ {
             apis::event_api::get_event,
             apis::event_api::search_events,
             apis::event_api::get_event_detail,
+            apis::eii_api::eii_and,
             ])
 
 }
