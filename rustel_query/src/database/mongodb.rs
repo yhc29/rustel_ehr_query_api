@@ -39,17 +39,6 @@ impl MongoRepo {
         MongoRepo { db, cde_collection, tcde_collection, event_collection }
     }
 
-    pub fn get_cde_by_id(&self, id: &str) -> Result<CDE, Error> {
-      let id = id.parse::<i32>().unwrap();
-      print!("id: {}", id);
-      let filter = doc! {"id": id};
-      let cde_detail: Option<CDE> = self
-        .cde_collection
-        .find_one(filter, None)
-        .ok()
-        .expect("Error getting event's detail");
-      Ok(cde_detail.unwrap())
-  }
 
 
 }
