@@ -33,6 +33,10 @@ fn index() -> RawHtml<String> {
             <ul>
                 <li><a href="/cde/1">/cde/1</a> - Get CDE by ID</li>
                 <li><a href="/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10">/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10</a> - Search CDE by collection, field, value, partial, and limit</li>
+                <li><a href="/tcde/3">/cde/3</a> - Get TCDE by ID</li>
+                <li><a href="/event/1">/event/1</a> - Get Event by ID</li>
+                <li><a href="/search_events?cde=[[850124],[734045]]&tcde=3">/search_events?cde=[[850124],[734045]]&tcde=3</a> - Search Events by CDE and TCDE</li>
+                <li><a href="/event_detail/1073">/event_detail/1073</a> - Get Event Detail by ID</li>
             </ul>
         </body>
     </html>
@@ -48,6 +52,11 @@ fn rocket() -> _ {
         .mount("/", routes![
             index, 
             apis::cde_api::get_cde, 
-            apis::cde_api::search_cde])
+            apis::cde_api::search_cde,
+            apis::cde_api::get_tcde,
+            apis::event_api::get_event,
+            apis::event_api::search_events,
+            apis::event_api::get_event_detail,
+            ])
 
 }

@@ -9,6 +9,7 @@ pub struct TCDE {
     pub id: i32,
     pub collection: String,
     pub field: String,
-    pub value_type: String,
+    #[serde(rename = "type")]
+    pub temporal_type: String,
     pub count: i32,
 }

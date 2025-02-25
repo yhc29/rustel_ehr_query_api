@@ -1,4 +1,4 @@
-use crate::{models::cde::CDE, database::mongodb::MongoRepo};
+use crate::{models::cde::CDE, models::tcde::TCDE, database::mongodb::MongoRepo};
 use mongodb::results::{self, InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 use mongodb::{options::ClientOptions, Client, bson::doc, options::FindOptions};
@@ -25,6 +25,27 @@ pub fn get_cde(db: &State<MongoRepo>, path: &str) -> Result<Json<CDE>, Status> {
     }
 }
 
+#[get("/tcde/<path>")]
+pub fn get_tcde(db: &State<MongoRepo>, path: &str) -> Result<Json<TCDE>, Status> {
+    let id = path;
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+    let id = id.parse::<i32>().map_err(|_| Status::BadRequest)?;
+    print!("id: {}", id);
+    let filter = doc! {"id": id};
+    let tcde_detail: Option<TCDE> = db
+      .tcde_collection
+      .find_one(filter, None)
+      .ok()
+      .expect("Error getting tcde's detail");
+
+    match tcde_detail {
+        Some(tcde) => Ok(Json(tcde)),
+        None => Err(Status::InternalServerError),
+    }
+}
+
 #[get("/search_cde?<collection>&<field>&<value>&<partial>&<limit>")]
 pub fn search_cde(
   db: &State<MongoRepo>, 
@@ -47,6 +68,8 @@ pub fn search_cde(
   }else {
     filter.insert("field", doc!{ "$exists": true });
   }
+  // value to lower case
+  let value = value.to_lowercase();
   if let Some(partial) = partial {
     if partial {
       filter.insert("str", doc! { "$regex": value });
