@@ -45,6 +45,7 @@ cargo run
 ```
 
 5. Open API Documentation
+
 Get host IP
 ```bash
 ifconfig | grep "inet " | grep -v 127.0.0.1
