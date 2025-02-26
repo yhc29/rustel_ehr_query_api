@@ -21,4 +21,4 @@ Cargo.lock
 #.idea/
 rustel_query/.env
 rustel_query/Rocket.toml
-rustel_query/cert/*
+rustel_query/certs/*
