@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 // tel cde schema: id, collection, field, type, count
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TCDE {
     pub id: i32,
     pub collection: String,

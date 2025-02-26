@@ -12,8 +12,8 @@ use super::cde_api;
 
 #[derive(Debug, Serialize)]
 pub struct EventDetailResponse {
-    cde: Vec<CDE>,
-    tcde: TCDE,
+    pub cde: Vec<CDE>,
+    pub tcde: TCDE,
 }
 
 // Add a wrapper struct for parsing

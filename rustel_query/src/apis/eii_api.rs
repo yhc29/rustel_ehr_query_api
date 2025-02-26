@@ -12,7 +12,7 @@ use percent_encoding::percent_decode_str;
 use std::collections::HashMap;
 
 #[derive(Debug)]
-pub struct EventListParam(Vec<i32>);
+pub struct EventListParam(pub Vec<i32>);
 
 #[rocket::async_trait]
 impl<'r> rocket::form::FromFormField<'r> for EventListParam {
@@ -40,6 +40,14 @@ impl<'r> rocket::form::FromFormField<'r> for EventListParam {
 pub struct CandidateResponse {
     #[serde(flatten)]
     groups: HashMap<i32, Vec<String>>
+}
+impl IntoIterator for CandidateResponse {
+    type Item = (i32, Vec<String>);
+    type IntoIter = std::collections::hash_map::IntoIter<i32, Vec<String>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.groups.into_iter()
+    }
 }
 
 #[get("/eii_and?<input1>&<input2>")]
