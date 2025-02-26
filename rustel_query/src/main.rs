@@ -14,6 +14,7 @@ use std::time::Instant;
 use rocket::response::content::RawHtml;
 use rocket::form::Form;
 use rocket::local::blocking::Client;
+use rocket::config::{Config, TlsConfig};
 
 use database::mongodb::{MongoRepo};
 use mongodb::bson::{doc, Document,Bson};
@@ -60,8 +61,14 @@ fn index() -> RawHtml<String> {
 
 #[launch]
 fn rocket() -> _ {
+    let config = Config::figment()
+        .merge(("tls", TlsConfig::from_paths(
+            "certs/cert.pem",
+            "certs/private.key"
+        )));
+
     let tel_db = MongoRepo::init();
-    rocket::build()
+    rocket::custom(config)
         .manage(tel_db)
         .mount("/", routes![
             index, 

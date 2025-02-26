@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rocket = {version = "0.5.1", features = ["json"]}
+rocket = {version = "0.5.1", features = ["json", "tls"]}
 serde = "1.0.136"
 dotenv = "0.15.0"
 maplit = "1.0.2"
