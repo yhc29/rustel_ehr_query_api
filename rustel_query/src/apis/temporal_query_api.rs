@@ -41,7 +41,8 @@ impl<'r> rocket::form::FromFormField<'r> for EventListParam {
 
 #[derive(Debug, Serialize)]
 pub struct TemporalQueryResponse {
-    ptids: Vec<String>
+  count: i32,
+  ptids: Vec<String>
 }
 
 #[get("/efcfcd_diamond?<event_list1>&<event_list2>&<delta_max>&<delta_max_op>&<cooccurrence>&<negation>")]
@@ -98,7 +99,25 @@ pub async fn efcfcd_diamond_v4_1(
     };
 
     // Process each candidate group
-    for (pt_group_id, ptid_list) in candidates.into_iter() {
+    for (pt_group_id, candidates_list) in candidates.into_iter() {
+      println!("pt_group_id: {:?}", pt_group_id);
+      let candidates_num = candidates_list.len();
+      println!("candidates_num: {:?}", candidates_num);
+      // split the candidates into smaller groups with max 5000 elements
+      let mut candidates_list_split = Vec::new();
+      let mut candidates_list_temp = Vec::new();
+      for candidate in candidates_list {
+        candidates_list_temp.push(candidate);
+        if candidates_list_temp.len() == 5000 {
+          candidates_list_split.push(candidates_list_temp);
+          candidates_list_temp = Vec::new();
+        }
+      }
+      if !candidates_list_temp.is_empty() {
+        candidates_list_split.push(candidates_list_temp);
+      }
+      for ptid_list in candidates_list_split {
+        // println!("ptid_list count for query: {:?}", ptid_list.len());
         let pipeline = vec![
             doc! {
                 "$match": {
@@ -205,7 +224,11 @@ pub async fn efcfcd_diamond_v4_1(
                 }
             }
         }
+      }
     }
 
-    Ok(Json(TemporalQueryResponse { ptids: result }))
+    Ok(Json(TemporalQueryResponse { 
+      count: result.len() as i32,
+      ptids: result 
+    }))
 }
