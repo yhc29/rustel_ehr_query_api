@@ -28,19 +28,28 @@ fn index() -> RawHtml<String> {
         </head>
         <body>
             <h1>TEL Query API</h1>
-            <p>TEL Query API is a RESTful API that provides access to the TEL database.</p>
+            <p>TEL Query API is a RESTful API that provides access to the MIMIC3 database using Temporal Ensemble Logic.</p>
             <h2>Endpoints</h2>
             <ul>
-                <li><a href="/cde/1">/cde/1</a> - Get CDE by ID</li>
-                <li><a href="/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10">/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10</a> - Search CDE by collection, field, value, partial, and limit</li>
-                <li><a href="/tcde/3">/cde/3</a> - Get TCDE by ID</li>
+                <li><a href="/cde/1">/cde/1</a> - Get MIMIC3 data element by ID</li>
+
+                <li><a href="/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10">/search_cde?collection=d_icd_diagnoses&field=long_title&value=essential hypertension&partial=true&limit=10</a> - Search MIMIC3 data element by collection, field, value. Set partial to true for partial match. Set limit to limit the number of results</li>
+
+                <li><a href="/tcde/3">/cde/3</a> - Get MIMIC3 temporal data element by ID</li>
+
                 <li><a href="/event/1">/event/1</a> - Get Event by ID</li>
-                <li><a href="/search_events?cde=[[850124],[734045]]&tcde=3">/search_events?cde=[[850124],[734045]]&tcde=3</a> - Search Events by CDE and TCDE</li>
+
+                <li><a href="/search_events?cde=[[850124],[734045]]&tcde=3">/search_events?cde=[[850124],[734045]]&tcde=3</a> - Search Events by MIMIC3 data element and temporal data element</li>
+
                 <li><a href="/event_detail/1073">/event_detail/1073</a> - Get Event Detail by ID</li>
-                <li><a href="/eii_and?input1=[1]&input2=[112]">/eii_and?input1=[1]&input2=[112]</a> - Get subjects with both Event List 1 and Event List 2</li>
-                <li><a href="/patient/10026">/patient/10026</a> - Get CDEs of a patient by PTID</li>
-                <li><a href="/patient_events/10026">/patient_events/10026</a> - Get Events of a patient by PTID</li>
-                <li><a href="/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false">/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false</a> - Get subjects with Event List 1 and Event List 2</li>
+
+                <li><a href="/patient/10026">/patient/10026</a> - Get patient records by PTID</li>
+
+                <li><a href="/patient_events/10026">/patient_events/10026</a> - Get patient Events by PTID</li>
+
+                <li><a href="/eii_and?input1=[1]&input2=[112]">/eii_and?input1=[1]&input2=[112]</a> - Get subjects with at least one event from both input1 and input2</li>
+
+                <li><a href="/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false">/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false</a> - TEL diamond matching query. Get subjects containing at least one event from event_list1 followed by an event from event_list2 within delta_max time</li>
             </ul>
         </body>
     </html>
