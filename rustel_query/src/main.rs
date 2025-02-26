@@ -28,7 +28,7 @@ fn index() -> RawHtml<String> {
         </head>
         <body>
             <h1>TEL Query API</h1>
-            <p>TEL Query API is a RESTful API that provides access to the MIMIC3 database using Temporal Ensemble Logic.</p>
+            <p>TEL Query API is a RESTful API that provides access to the MIMIC3 database (46,520 subjects) using Temporal Ensemble Logic.</p>
             <h2>Endpoints</h2>
             <ul>
                 <li><a href="/cde/2">/cde/2</a> - Get MIMIC3 data element by ID</li>
