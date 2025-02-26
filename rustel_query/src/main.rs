@@ -40,7 +40,7 @@ fn index() -> RawHtml<String> {
                 <li><a href="/eii_and?input1=[1]&input2=[112]">/eii_and?input1=[1]&input2=[112]</a> - Get subjects with both Event List 1 and Event List 2</li>
                 <li><a href="/patient/10026">/patient/10026</a> - Get CDEs of a patient by PTID</li>
                 <li><a href="/patient_events/10026">/patient_events/10026</a> - Get Events of a patient by PTID</li>
-                <li><a href="/efcfcd_diamond?event_list1=[1,2]&event_list2=[3,4]&delta_max=0.5&delta_max_op=lt&cooccurrence=true&negation=false">/efcfcd_diamond?event_list1=[1,2]&event_list2=[3,4]&delta_max=0.5&delta_max_op=lt&cooccurrence=true&negation=false</a> - Get subjects with Event List 1 and Event List 2</li>
+                <li><a href="/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false">/efcfcd_diamond?event_list1=[1]&event_list2=[122]&delta_max=3153600000&delta_max_op=lt&cooccurrence=true&negation=false</a> - Get subjects with Event List 1 and Event List 2</li>
             </ul>
         </body>
     </html>
