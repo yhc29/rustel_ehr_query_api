@@ -11,6 +11,8 @@ use percent_encoding::percent_decode_str;
 
 use std::collections::HashMap;
 
+use crate::apis::event_api::{search_events_by_omop,StringArrayParam};
+
 #[derive(Debug)]
 pub struct EventListParam(pub Vec<i32>);
 
@@ -133,3 +135,27 @@ pub async fn eii_and(
 
   Ok(Json(CandidateResponse { groups: candidates }))
 }
+
+#[get("/eii_and_omop?<omop_concept_id_list1>&<omop_concept_id_list2>")]
+pub async fn eii_and_omop(
+  db: &State<MongoRepo>,
+  omop_concept_id_list1: StringArrayParam,
+  omop_concept_id_list2: StringArrayParam
+) -> Result<Json<CandidateResponse>, Status> {
+  // Get event lists using search_events_by_omop
+  let event_list1 = search_events_by_omop(db, omop_concept_id_list1)
+      .map_err(|_| Status::InternalServerError)?
+      .into_inner(); // Extract Vec<i32> from Json<Vec<i32>>
+  let event_list2 = search_events_by_omop(db, omop_concept_id_list2)
+      .map_err(|_| Status::InternalServerError)?
+      .into_inner(); // Extract Vec<i32> from Json<Vec<i32>>
+  // convert event_list to EventListParam
+  let event_param1 = EventListParam(event_list1);
+  let event_param2 = EventListParam(event_list2);
+  // call eii_and with event_list input
+  let result = eii_and(db, event_param1, event_param2).await?;
+  Ok(result)
+
+}
+  
+
