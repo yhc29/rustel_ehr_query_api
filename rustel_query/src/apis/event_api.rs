@@ -241,7 +241,7 @@ pub fn search_events_by_omop(
   // get cde id list from mapping
   let mut cde_list = Vec::new();
   let filter = doc! {
-    "omop_concept": {
+    "omop_concept_id": {
       "$in": &omop_concepts.0
     }
   };
