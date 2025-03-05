@@ -40,8 +40,9 @@ impl<'r> rocket::form::FromFormField<'r> for EventListParam {
 
 #[derive(Debug, Serialize)]
 pub struct CandidateResponse {
-    #[serde(flatten)]
-    groups: HashMap<i32, Vec<String>>
+  // count for number of all candidates, ptids list for each group
+  count: i32,
+  groups: HashMap<i32, Vec<String>>
 }
 impl IntoIterator for CandidateResponse {
     type Item = (i32, Vec<String>);
@@ -52,16 +53,16 @@ impl IntoIterator for CandidateResponse {
     }
 }
 
-#[get("/eii_and?<input1>&<input2>")]
+#[get("/eii_and?<event_list1>&<event_list2>")]
 pub async fn eii_and(
   db: &State<MongoRepo>,
-  input1: EventListParam,
-  input2: EventListParam
+  event_list1: EventListParam,
+  event_list2: EventListParam
 ) -> Result<Json<CandidateResponse>, Status> {
-  let event_list1: Vec<i32> = input1.0;
-  let event_list2: Vec<i32> = input2.0;
+  let param1: Vec<i32> = event_list1.0;
+  let param2: Vec<i32> = event_list2.0;
   // Combine both event lists for the $in operator
-  let combined_events = event_list1.iter().chain(&event_list2).cloned().collect::<Vec<_>>();
+  let combined_events = param1.iter().chain(&param2).cloned().collect::<Vec<_>>();
   println!("combined_events: {:?}", combined_events);
   // Build the aggregation pipeline
   let pipeline = vec![
@@ -81,7 +82,7 @@ pub async fn eii_and(
               "e1": {
                   "$sum": {
                       "$cond": [
-                          {"$in": ["$event", event_list1]},
+                          {"$in": ["$event", param1]},
                           1,
                           0
                       ]
@@ -90,7 +91,7 @@ pub async fn eii_and(
               "e2": {
                   "$sum": {
                       "$cond": [
-                          {"$in": ["$event", event_list2]},
+                          {"$in": ["$event", param2]},
                           1,
                           0
                       ]
@@ -118,6 +119,7 @@ pub async fn eii_and(
       .map_err(|_| Status::InternalServerError)?;
 
   // Convert the results to HashMap
+  let mut count = 0;
   let mut candidates = HashMap::new();
   while let Some(result) = cursor.next() {
       let doc = result.map_err(|_| Status::InternalServerError)?;
@@ -129,11 +131,12 @@ pub async fn eii_and(
               .iter()
               .filter_map(|ptid| ptid.as_str().map(|s| s.to_string()))
               .collect();
-          candidates.insert(group_id, ptid_list);
+          candidates.insert(group_id, ptid_list.clone());
+          count += ptid_list.len() as i32;
       }
   }
 
-  Ok(Json(CandidateResponse { groups: candidates }))
+  Ok(Json(CandidateResponse { count, groups: candidates }))
 }
 
 #[get("/eii_and_omop?<omop_concept_id_list1>&<omop_concept_id_list2>")]

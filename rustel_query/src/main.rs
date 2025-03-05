@@ -148,6 +148,7 @@ fn index() -> RawHtml<String> {
                     <ul class="endpoint-list">
                         <li class="endpoint-item">
                             <div class="endpoint-description">Get MIMIC3 data element by ID</div>
+                            <div class="uri-template">GET /cde/{id}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/cde/', this)">
                                 <div class="form-group">
                                     <label for="cde-id">CDE ID:</label>
@@ -160,6 +161,7 @@ fn index() -> RawHtml<String> {
                         
                         <li class="endpoint-item">
                             <div class="endpoint-description">Search MIMIC3 data element by collection, field, value</div>
+                            <div class="uri-template">GET /search_cde?collection={collection}&field={field}&value={value}&partial={partial}&limit={limit}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/search_cde', this)">
                                 <div class="form-group">
                                     <label for="collection">Collection:</label>
@@ -191,6 +193,7 @@ fn index() -> RawHtml<String> {
                         
                         <li class="endpoint-item">
                             <div class="endpoint-description">Get MIMIC3 temporal data element by ID</div>
+                            <div class="uri-template">GET /tcde/{id}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/tcde/', this)">
                                 <div class="form-group">
                                     <label for="tcde-id">TCDE ID:</label>
@@ -203,6 +206,8 @@ fn index() -> RawHtml<String> {
                         
                         <li class="endpoint-item">
                             <div class="endpoint-description">Search Events by MIMIC3 data element and temporal data element</div>
+                            <div class="uri-template">GET /search_events?cde={cde}&tcde={tcde}</div>
+                            
                             <form class="api-form" onsubmit="callApiWithForm(event, '/search_events', this)">
                                 <div class="form-group">
                                     <label for="cde">CDE (2D array format):</label>
@@ -216,9 +221,66 @@ fn index() -> RawHtml<String> {
                                 <span class="response-time"></span>
                             </form>
                         </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Get Event Detail by ID</div>
+                            <div class="uri-template">GET /event_detail/{id}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/event_detail/', this)">
+                                <div class="form-group">
+                                    <label for="event-id">Event ID:</label>
+                                    <input type="text" id="event-id" name="event-id" value="1073">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Get Patient by ID</div>
+                            <div class="uri-template">GET /patient/{id}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/patient/', this)">
+                                <div class="form-group">
+                                    <label for="pt-id">Patient ID:</label>
+                                    <input type="text" id="pt-id" name="pt-id" value="72290">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Get Patient Events by ID</div>
+                            <div class="uri-template">GET /patient_events/{id}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/patient_events/', this)">
+                                <div class="form-group">
+                                    <label for="pt-id">Patient ID:</label>
+                                    <input type="text" id="pt-id" name="pt-id" value="72290">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">EII AND query</div>
+                            <div class="uri-template">GET /eii_and?event_list1={event_list1}&event_list2={event_list2}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/eii_and', this)">
+                                <div class="form-group">
+                                    <label for="event_list1">Event List 1:</label>
+                                    <input type="text" id="event_list1" name="event_list1" value="[1]">
+                                </div>
+                                <div class="form-group">
+                                    <label for="event_list2">Event List 2:</label>
+                                    <input type="text" id="event_list2" name="event_list2" value="[122]">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
                         
                         <li class="endpoint-item">
                             <div class="endpoint-description">TEL diamond matching query</div>
+                            <div class="uri-template">GET /efcfcd_diamond?event_list1={event_list1}&event_list2={event_list2}&delta_max={delta_max}&delta_max_op={delta_max_op}&cooccurrence={cooccurrence}&negation={negation}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/efcfcd_diamond', this)">
                                 <div class="form-group">
                                     <label for="event_list1">Event List 1:</label>
@@ -229,7 +291,7 @@ fn index() -> RawHtml<String> {
                                     <input type="text" id="event_list2" name="event_list2" value="[122]">
                                 </div>
                                 <div class="form-group">
-                                    <label for="delta_max">Delta Max (milliseconds):</label>
+                                    <label for="delta_max">Delta Max (seconds):</label>
                                     <input type="text" id="delta_max" name="delta_max" value="3153600000">
                                 </div>
                                 <div class="form-group">
@@ -262,10 +324,28 @@ fn index() -> RawHtml<String> {
                         
                         <li class="endpoint-item">
                             <div class="endpoint-description">Search Events by OMOP concepts</div>
+                            <div class="uri-template">GET /search_events_by_omop?omop_concepts={omop_concepts}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/search_events_by_omop', this)">
                                 <div class="form-group">
                                     <label for="omop_concepts">OMOP Concepts (JSON array):</label>
                                     <input type="text" id="omop_concepts" name="omop_concepts" value='["44826401","44825200"]'>
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">EII AND query with OMOP concepts</div>
+                            <div class="uri-template">GET /eii_and_omop?omop_concept_id_list1={omop_concept_id_list1}&omop_concept_id_list2={omop_concept_id_list2}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/eii_and_omop', this)">
+                                <div class="form-group">
+                                    <label for="omop_concept_id_list1">OMOP Concept ID List 1 (JSON array):</label>
+                                    <input type="text" id="omop_concept_id_list1" name="omop_concept_id_list1" value='["44826401","44825200"]'>
+                                </div>
+                                <div class="form-group">
+                                    <label for="omop_concept_id_list2">OMOP Concept ID List 2 (JSON array):</label>
+                                    <input type="text" id="omop_concept_id_list2" name="omop_concept_id_list2" value='["44821949"]'>
                                 </div>
                                 <button type="submit" class="btn">Send Request</button>
                                 <span class="response-time"></span>
@@ -384,6 +464,20 @@ fn index() -> RawHtml<String> {
                 }
             }
             </script>
+            <style>
+                .uri-template {
+                    font-family: monospace;
+                    background: #f1f1f1;
+                    padding: 4px 8px;
+                    border-radius: 3px;
+                    border: 1px solid #ddd;
+                    color: #333;
+                    font-size: 0.9em;
+                    word-break: break-all;
+                    margin-top: 5px;
+                    display: inline-block;
+                }
+            </style>
         </body>
     </html>
     "#;
@@ -414,7 +508,8 @@ fn rocket() -> _ {
             apis::patient_api::get_patient,
             apis::patient_api::get_patient_events,
             apis::temporal_query_api::efcfcd_diamond_v4_1,
-            apis::event_api::search_events_by_omop
+            apis::event_api::search_events_by_omop,
+            apis::eii_api::eii_and_omop
             ])
 
 }
