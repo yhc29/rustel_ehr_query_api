@@ -8,7 +8,7 @@ use mongodb::{
     results::{InsertOneResult, UpdateResult, DeleteResult},
     sync::{Client, Collection, Database},
 };
-use crate::models::cde::{CdeRecord, CDE};
+use crate::models::cde::{CdeRecord, CDE, OmopCdeMapping};
 use crate::models::tcde::TCDE;
 use crate::models::event::{Event, EventRecord};
 use crate::models::eii::Eii;
@@ -23,6 +23,7 @@ pub struct MongoRepo {
     pub fc_collection: Collection<FC>,
     pub cde_record_collection: Collection<CdeRecord>,
     pub event_record_collection: Collection<EventRecord>,
+    pub omop_mapping_collection: Collection<OmopCdeMapping>,
 }
 
 impl MongoRepo {
@@ -45,8 +46,9 @@ impl MongoRepo {
         let fc_collection = db.collection("fcs");
         let cde_record_collection = db.collection("cde_records");
         let event_record_collection = db.collection("event_records");
+        let omop_mapping_collection = db.collection("omop_cde_mapping");
 
-        MongoRepo { db, cde_collection, tcde_collection, event_collection, eii_collection, fc_collection, cde_record_collection,event_record_collection }
+        MongoRepo { db, cde_collection, tcde_collection, event_collection, eii_collection, fc_collection, cde_record_collection, event_record_collection, omop_mapping_collection }
     }
 
 

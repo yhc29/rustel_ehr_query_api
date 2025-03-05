@@ -31,3 +31,9 @@ pub struct CdeRecord {
     pub ptid: String,
     pub cde: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct OmopCdeMapping {
+    pub cde_id: i32,
+    pub omop_concept_id: String,
+}
