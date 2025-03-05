@@ -18,7 +18,7 @@ pub struct EventDetailResponse {
 
 // Add a wrapper struct for parsing
 #[derive(Debug)]
-struct CdeArrayParam(Vec<Vec<i32>>);
+pub struct CdeArrayParam(pub Vec<Vec<i32>>);
 
 #[rocket::async_trait]
 impl<'r> rocket::form::FromFormField<'r> for CdeArrayParam {
@@ -187,4 +187,38 @@ pub fn search_events(
     }
   }
   Ok(Json(results))
+}
+
+#[get("/search_events_by_omop?<omop_concepts>")]
+pub fn search_events_by_omop(
+  db: &State<MongoRepo>, 
+  omop_concepts: Vec<String>
+) -> Result<Json<Vec<i32>>, Status> {
+  // get cde id list from mapping
+  let mut cde_list = Vec::new();
+  let filter = doc! {
+    "omop_concept": {
+      "$in": omop_concepts
+    }
+  };
+  let cursor = db
+    .omop_mapping_collection
+    .find(filter, None)
+    .ok()
+    .expect("Error getting event's detail");
+  for result in cursor {
+    match result {
+      Ok(doc) => {
+        let cde_id = doc.cde_id;
+        cde_list.push(cde_id);
+      }
+      Err(_) => return Err(Status::InternalServerError),
+    }
+  }
+  // search events by cde list using search_events
+  let results = search_events(db, Some(CdeArrayParam(vec![cde_list])), None)
+    .map_err(|_| Status::InternalServerError)?
+    .into_inner();
+  Ok(Json(results))
+
 }
