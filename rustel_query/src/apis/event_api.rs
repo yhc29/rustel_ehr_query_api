@@ -59,30 +59,42 @@ pub struct StringArrayParam(pub Vec<String>);
 #[rocket::async_trait]
 impl<'r> rocket::form::FromFormField<'r> for StringArrayParam {
     fn from_value(field: rocket::form::ValueField<'r>) -> rocket::form::Result<'r, Self> {
-        // Only decode URL once
-        let decoded = percent_encoding::percent_decode_str(field.value)
+        // First, try parsing as JSON
+        let decoded = percent_decode_str(field.value)
             .decode_utf8()
             .map_err(|_| rocket::form::Error::validation("Failed to decode URL"))?
             .to_string();
-            
-        // Parse JSON once
-        let parsed: Value = serde_json::from_str(&decoded)
-            .map_err(|_| rocket::form::Error::validation("Failed to parse JSON"))?;
         
-        let mut result = Vec::new();
-        if let Value::Array(outer) = parsed {
-            for inner in outer {
-                if let Value::String(s) = inner {
-                    result.push(s);
-                } else {
-                    return Err(rocket::form::Errors::from(rocket::form::Error::validation("Invalid inner array")));
+        // Try to parse as JSON first
+        if let Ok(parsed) = serde_json::from_str::<Value>(&decoded) {
+            if let Value::Array(outer) = parsed {
+                let mut result = Vec::new();
+                for inner in outer {
+                    if let Value::String(s) = inner {
+                        result.push(s);
+                    } else if let Value::Number(n) = inner {
+                        result.push(n.to_string());
+                    } else {
+                        return Err(rocket::form::Errors::from(rocket::form::Error::validation("Invalid array element")));
+                    }
                 }
+                return Ok(StringArrayParam(result));
             }
-        } else {
-            return Err(rocket::form::Errors::from(rocket::form::Error::validation("Invalid outer array")));
         }
         
-        Ok(StringArrayParam(result))
+        // If JSON parsing fails, try comma-separated format
+        let values: Vec<String> = decoded
+            .trim_matches(|c| c == '[' || c == ']')
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
+        
+        if values.is_empty() {
+            return Err(rocket::form::Errors::from(rocket::form::Error::validation("Empty array")));
+        }
+        
+        Ok(StringArrayParam(values))
     }
 }
 
