@@ -126,7 +126,7 @@ fn index() -> RawHtml<String> {
                             <div class="endpoint-description">Search MIMIC3 data element by collection, field, value. Set partial to true for partial match. Set limit to limit the number of results</div>
                         </li>
                         <li class="endpoint-item">
-                            <a href="/tcde/3" class="endpoint-link" onclick="fetchWithTime(event, this)">/cde/3</a>
+                            <a href="/tcde/3" class="endpoint-link" onclick="fetchWithTime(event, this)">/tcde/3</a>
                             <span class="response-time"></span>
                             <div class="endpoint-description">Get MIMIC3 temporal data element by ID</div>
                         </li>
