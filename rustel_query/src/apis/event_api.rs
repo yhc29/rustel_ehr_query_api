@@ -54,6 +54,38 @@ impl<'r> rocket::form::FromFormField<'r> for CdeArrayParam {
     }
 }
 
+#[derive(Debug)]
+pub struct StringArrayParam(pub Vec<String>);
+#[rocket::async_trait]
+impl<'r> rocket::form::FromFormField<'r> for StringArrayParam {
+    fn from_value(field: rocket::form::ValueField<'r>) -> rocket::form::Result<'r, Self> {
+        // Only decode URL once
+        let decoded = percent_encoding::percent_decode_str(field.value)
+            .decode_utf8()
+            .map_err(|_| rocket::form::Error::validation("Failed to decode URL"))?
+            .to_string();
+            
+        // Parse JSON once
+        let parsed: Value = serde_json::from_str(&decoded)
+            .map_err(|_| rocket::form::Error::validation("Failed to parse JSON"))?;
+        
+        let mut result = Vec::new();
+        if let Value::Array(outer) = parsed {
+            for inner in outer {
+                if let Value::String(s) = inner {
+                    result.push(s);
+                } else {
+                    return Err(rocket::form::Errors::from(rocket::form::Error::validation("Invalid inner array")));
+                }
+            }
+        } else {
+            return Err(rocket::form::Errors::from(rocket::form::Error::validation("Invalid outer array")));
+        }
+        
+        Ok(StringArrayParam(result))
+    }
+}
+
 #[get("/event/<path>")]
 pub fn get_event(db: &State<MongoRepo>, path: &str) -> Result<Json<Event>, Status> {
     let id = path;
@@ -192,15 +224,17 @@ pub fn search_events(
 #[get("/search_events_by_omop?<omop_concepts>")]
 pub fn search_events_by_omop(
   db: &State<MongoRepo>, 
-  omop_concepts: Vec<String>
+  omop_concepts: StringArrayParam
 ) -> Result<Json<Vec<i32>>, Status> {
   // get cde id list from mapping
   let mut cde_list = Vec::new();
   let filter = doc! {
     "omop_concept": {
-      "$in": omop_concepts
+      "$in": &omop_concepts.0
     }
   };
+  println!("filter: {:?}", filter);
+  
   let cursor = db
     .omop_mapping_collection
     .find(filter, None)
