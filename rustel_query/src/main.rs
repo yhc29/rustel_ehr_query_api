@@ -171,7 +171,7 @@ fn index() -> RawHtml<String> {
                             <div class="endpoint-description">Heavy query example for TEL diamond matching query.</div>
                         </li>
                         <li class="endpoint-item">
-                            <a href="/search_events_by_omop?omop_concepts=[44826401,44825200]" class="endpoint-link" onclick="fetchWithTime(event, this)">/search_events_by_omop?omop_concepts=[44826401,44825200]</a>
+                            <a href="/search_events_by_omop?omop_concepts=["44826401","44825200"]" class="endpoint-link" onclick="fetchWithTime(event, this)">/search_events_by_omop?omop_concepts=["44826401","44825200"]</a>
                             <span class="response-time"></span>
                             <div class="endpoint-description">Search Events by OMOP concepts</div>
                         </li>
