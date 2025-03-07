@@ -236,7 +236,7 @@ fn index() -> RawHtml<String> {
                         </li>
 
                         <li class="endpoint-item">
-                            <div class="endpoint-description">Get Patient by ID</div>
+                            <div class="endpoint-description">Get Patient Records by ID</div>
                             <div class="uri-template">GET /patient/{id}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/patient/', this)">
                                 <div class="form-group">
