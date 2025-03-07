@@ -267,11 +267,11 @@ fn index() -> RawHtml<String> {
                             <form class="api-form" onsubmit="callApiWithForm(event, '/eii_and', this)">
                                 <div class="form-group">
                                     <label for="event_list1">Event List 1:</label>
-                                    <input type="text" id="event_list1" name="event_list1" value="[1]">
+                                    <input type="text" id="event_list1" name="event_list1" value="[112,129,148,166,213,277,298,390,506,621,779,1456,1491,1648,2204,2338,2447,2765,2989,3097,3403,5626,6167,6906,7578,8467,9762,13575,18229,21782,24384,25395,40285,45310,45852,47310]">
                                 </div>
                                 <div class="form-group">
                                     <label for="event_list2">Event List 2:</label>
-                                    <input type="text" id="event_list2" name="event_list2" value="[122]">
+                                    <input type="text" id="event_list2" name="event_list2" value="[545,1778,5422,6245,10154,12557,23042,26359,32995,39952,40254,51940,54588,831,2935,5072,6823,7444,8658,10587,11601,16588,32900,42468]">
                                 </div>
                                 <button type="submit" class="btn">Send Request</button>
                                 <span class="response-time"></span>
@@ -341,16 +341,87 @@ fn index() -> RawHtml<String> {
                             <form class="api-form" onsubmit="callApiWithForm(event, '/eii_and_omop', this)">
                                 <div class="form-group">
                                     <label for="omop_concept_id_list1">OMOP Concept ID List 1 (JSON array):</label>
-                                    <input type="text" id="omop_concept_id_list1" name="omop_concept_id_list1" value='["44826401","44825200"]'>
+                                    <input type="text" id="omop_concept_id_list1" name="omop_concept_id_list1" value='["44821949"]'>
                                 </div>
                                 <div class="form-group">
                                     <label for="omop_concept_id_list2">OMOP Concept ID List 2 (JSON array):</label>
-                                    <input type="text" id="omop_concept_id_list2" name="omop_concept_id_list2" value='["44821949"]'>
+                                    <input type="text" id="omop_concept_id_list2" name="omop_concept_id_list2" value='["44826401","44825200"]'>
                                 </div>
                                 <button type="submit" class="btn">Send Request</button>
                                 <span class="response-time"></span>
                             </form>
                         </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Temporal Query: Existential Co-occurrence with OMOP concepts</div>
+                            <div class="uri-template">GET /efcfcd_existential_cooccurrence_omop?omop_concept_id_list1={omop_concept_id_list1}&omop_concept_id_list2={omop_concept_id_list2}&delta_max={delta_max}&left_open={left_open}&right_open={right_open}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/efcfcd_existential_cooccurrence_omop', this)">
+                                <div class="form-group">
+                                    <label for="omop_concept_id_list1">OMOP Concept ID List 1 (JSON array):</label>
+                                    <input type="text" id="omop_concept_id_list1" name="omop_concept_id_list1" value='["44821949"]'>
+                                </div>
+                                <div class="form-group">
+                                    <label for="omop_concept_id_list2">OMOP Concept ID List 2 (JSON array):</label>
+                                    <input type="text" id="omop_concept_id_list2" name="omop_concept_id_list2" value='["44826401","44825200"]'>
+                                </div>
+                                <div class="form-group">
+                                    <label for="delta_max">Delta Max (seconds):</label>
+                                    <input type="text" id="delta_max" name="delta_max" value="3153600000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="left_open">Left Open:</label>
+                                    <select id="left_open" name="left_open">
+                                        <option value="true" selected>true</option>
+                                        <option value="false">false</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="right_open">Right Open:</label>
+                                    <select id="right_open" name="right_open">
+                                        <option value="true" selected>true</option>
+                                        <option value="false">false</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Temporal Query: Existential Co-occurrence</div>
+                            <div class="uri-template">GET /efcfcd_existential_cooccurrence?event_list1={event_list1}&event_list2={event_list2}&delta_max={delta_max}&left_open={left_open}&right_open={right_open}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/efcfcd_existential_cooccurrence', this)">
+                                <div class="form-group">
+                                    <label for="event_list1">Event List 1:</label>
+                                    <input type="text" id="event_list1" name="event_list1" value="[112,129,148,166,213,277,298,390,506,621,779,1456,1491,1648,2204,2338,2447,2765,2989,3097,3403,5626,6167,6906,7578,8467,9762,13575,18229,21782,24384,25395,40285,45310,45852,47310]">
+                                </div>
+                                <div class="form-group">
+                                    <label for="event_list2">Event List 2:</label>
+                                    <input type="text" id="event_list2" name="event_list2" value="[545,1778,5422,6245,10154,12557,23042,26359,32995,39952,40254,51940,54588,831,2935,5072,6823,7444,8658,10587,11601,16588,32900,42468]">
+                                </div>
+                                <div class="form-group">
+                                    <label for="delta_max">Delta Max (seconds):</label>
+                                    <input type="text" id="delta_max" name="delta_max" value="3153600000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="left_open">Left Open:</label>
+                                    <select id="left_open" name="left_open">
+                                        <option value="true" selected>true</option>
+                                        <option value="false">false</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="right_open">Right Open:</label>
+                                    <select id="right_open" name="right_open">
+                                        <option value="true" selected>true</option>
+                                        <option value="false">false</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
                     </ul>
                 </div>
                 
@@ -509,7 +580,9 @@ fn rocket() -> _ {
             apis::patient_api::get_patient_events,
             apis::temporal_query_api::efcfcd_diamond_v4_1,
             apis::event_api::search_events_by_omop,
-            apis::eii_api::eii_and_omop
+            apis::eii_api::eii_and_omop,
+            apis::temporal_query_api::efcfcd_existential_cooccurrence_omop,
+            apis::temporal_query_api::efcfcd_existential_cooccurrence
             ])
 
 }

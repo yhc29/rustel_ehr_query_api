@@ -12,6 +12,7 @@ use percent_encoding::percent_decode_str;
 
 use std::collections::HashMap;
 
+use crate::apis::event_api::{search_events_by_omop,StringArrayParam};
 use super::eii_api;
 
 #[derive(Debug)]
@@ -50,7 +51,7 @@ pub async fn efcfcd_diamond_v4_1(
     db: &State<MongoRepo>,
     event_list1: EventListParam,
     event_list2: EventListParam,
-    delta_max: f64,
+    delta_max: i64,
     delta_max_op: Option<String>,
     cooccurrence: Option<bool>,
     negation: Option<bool>
@@ -231,4 +232,51 @@ pub async fn efcfcd_diamond_v4_1(
       count: result.len() as i32,
       ptids: result 
     }))
+}
+
+#[get("/efcfcd_existential_cooccurrence?<event_list1>&<event_list2>&<delta_max>&<left_open>&<right_open>")]
+pub async fn efcfcd_existential_cooccurrence(
+  db: &State<MongoRepo>,
+  event_list1: EventListParam,
+  event_list2: EventListParam,
+  delta_max: i64,
+  left_open: bool,
+  right_open: bool
+) -> Result<Json<TemporalQueryResponse>, Status> {
+  let delta_max_op = if right_open { "lt" } else { "lte" };
+  let cooccurance = if left_open { false } else { true };
+  let negation = false;
+
+  let result = efcfcd_diamond_v4_1(db, event_list1, event_list2, delta_max, Some(delta_max_op.to_string()), Some(cooccurance), Some(negation)).await?;
+  Ok(result)
+
+}
+
+#[get("/efcfcd_existential_cooccurrence_omop?<omop_concept_id_list1>&<omop_concept_id_list2>&<delta_max>&<left_open>&<right_open>")]
+pub async fn efcfcd_existential_cooccurrence_omop(
+  db: &State<MongoRepo>,
+  omop_concept_id_list1: StringArrayParam,
+  omop_concept_id_list2: StringArrayParam,
+  delta_max: i64,
+  left_open: bool,
+  right_open: bool
+) -> Result<Json<TemporalQueryResponse>, Status> {
+    // Get event lists using search_events_by_omop
+    let event_list1 = search_events_by_omop(db, omop_concept_id_list1)
+        .map_err(|_| Status::InternalServerError)?
+        .into_inner(); // Extract Vec<i32> from Json<Vec<i32>>
+    let event_list2 = search_events_by_omop(db, omop_concept_id_list2)
+        .map_err(|_| Status::InternalServerError)?
+        .into_inner(); // Extract Vec<i32> from Json<Vec<i32>>
+    // convert event_list to EventListParam
+    let event_param1 = EventListParam(event_list1);
+    let event_param2 = EventListParam(event_list2);
+
+    let delta_max_op = if right_open { "lt" } else { "lte" };
+    let cooccurance = if left_open { false } else { true };
+    let negation = false;
+
+    // call efcfcd_diamond_v4_1 with event_list input
+    let result = efcfcd_diamond_v4_1(db, event_param1, event_param2, delta_max, Some(delta_max_op.to_string()), Some(cooccurance), Some(negation)).await?;
+    Ok(result)
 }
