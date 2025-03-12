@@ -92,17 +92,26 @@ pub fn get_patient_timeline(db: &State<MongoRepo>, ptid: &str, event_id_list: Op
 
   let mut results = Vec::new();
 
+  let mut event_summary_dict: std::collections::HashMap<i32, Value> = std::collections::HashMap::new();
+
   for result in cursor {
       let doc = result.map_err(|_| Status::InternalServerError)?;
       let time = doc.time;
       let event_id = doc.event_id;
-      let event_summary = event_api::get_event_summary(db, &event_id.to_string()).map_err(|_| Status::InternalServerError)?.into_inner();
+      let event_summary = if !event_summary_dict.contains_key(&event_id) {
+        let summary = event_api::get_event_summary(db, &event_id.to_string()).map_err(|_| Status::InternalServerError)?.into_inner();
+        event_summary_dict.insert(event_id, summary.clone());
+        summary
+      } else {
+        event_summary_dict.get(&event_id).unwrap().clone()
+      };
       results.push(PatientTimelineRecord {
           time: time.to_string(),
           event: event_summary,
       });
-      // sort by time
-      results.sort_by(|a, b| a.time.cmp(&b.time));
   }
+  // sort by time
+  results.sort_by(|a, b| a.time.cmp(&b.time));
+
   Ok(Json(results))
 }
