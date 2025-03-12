@@ -5,7 +5,7 @@ use mongodb::{options::ClientOptions, Client, bson::doc, options::FindOptions};
 use mongodb::bson::Regex;
 use serde::Serialize;
 use rocket::request::FromParam;
-use serde_json::Value;
+use serde_json::{Value, json};
 use percent_encoding::percent_decode_str;
 
 use super::cde_api;
@@ -163,6 +163,30 @@ pub fn get_event_detail(db: &State<MongoRepo>, path: &str) -> Result<Json<EventD
       cde: cde_results,
       tcde: tcde_result.unwrap(),
     }))
+}
+
+// gives a event id and returns the event summary of key-value json
+#[get("/event_summary/<path>")]
+pub fn get_event_summary(db: &State<MongoRepo>, path: &str) -> Result<Json<Value>, Status> {
+    let id = path;
+    // get event detail
+    let event_detail = get_event_detail(db, id).map_err(|_| Status::InternalServerError)?.into_inner();
+    let cde_list = event_detail.cde;
+    let tcde = event_detail.tcde;
+    
+    let mut result = json!({
+      "time_field": {tcde.collection: tcde.field}
+    });
+    for cde in cde_list {
+      // if cde.collection not in result, add it
+      if !result.as_object().unwrap().contains_key(&cde.collection) {
+        result[&cde.collection] = json!({});
+      }
+      // add cde.field and value to cde.collection
+      result[&cde.collection][&cde.field] = json!(cde.value);
+    }
+
+    Ok(Json(result))
 }
 
 #[get("/search_events?<cde>&<tcde>")]

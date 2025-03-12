@@ -4,14 +4,22 @@ use crate::models::tcde;
 use crate::{models::tcde::TCDE, database::mongodb::MongoRepo};
 use mongodb::results::{self, InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
-use mongodb::{options::ClientOptions, Client, bson::doc, options::FindOptions};
+use mongodb::{options::ClientOptions, Client, bson::{self, doc}, options::FindOptions};
 use mongodb::bson::Regex;
 use serde::Serialize;
 use rocket::request::FromParam;
 use serde_json::Value;
 use percent_encoding::percent_decode_str;
 
+use crate::apis::event_api::{search_events_by_omop,StringArrayParam};
 use super::{cde_api, event_api};
+
+// create a structure of patient timeline record with a time field and event field
+#[derive(Debug, Serialize)]
+pub struct PatientTimelineRecord {
+    time: String,
+    event: Value,
+}
 
 #[get("/patient/<ptid>")]
 pub fn get_patient(db: &State<MongoRepo>, ptid: &str) -> Result<Json<Vec<CdeRecord>>, Status> {
@@ -64,4 +72,37 @@ pub fn get_patient_events(db: &State<MongoRepo>, ptid: &str) -> Result<Json<Vec<
         results.push(doc);
     }
     Ok(Json(results))
+}
+
+#[get("/patient_timeline?<ptid>&<event_id_list>")]
+pub fn get_patient_timeline(db: &State<MongoRepo>, ptid: &str, event_id_list: Option<StringArrayParam>) -> Result<Json<Vec<PatientTimelineRecord>>, Status> {
+  // check if event_id_list is provided
+  let filter = if event_id_list.is_none() {
+    doc! {"ptid": ptid}
+  } else {
+    // map each id in event_id_list to integer
+    let event_id_list = event_id_list.unwrap().0.iter().map(|id| id.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+
+    doc! {"ptid": ptid, "event_id": {"$in": event_id_list}}
+  };
+  let cursor = db
+    .event_record_collection
+    .find(filter, None)
+    .map_err(|_| Status::InternalServerError)?;
+
+  let mut results = Vec::new();
+
+  for result in cursor {
+      let doc = result.map_err(|_| Status::InternalServerError)?;
+      let time = doc.time;
+      let event_id = doc.event_id;
+      let event_summary = event_api::get_event_summary(db, &event_id.to_string()).map_err(|_| Status::InternalServerError)?.into_inner();
+      results.push(PatientTimelineRecord {
+          time: time.to_string(),
+          event: event_summary,
+      });
+      // sort by time
+      results.sort_by(|a, b| a.time.cmp(&b.time));
+  }
+  Ok(Json(results))
 }

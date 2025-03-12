@@ -236,6 +236,19 @@ fn index() -> RawHtml<String> {
                         </li>
 
                         <li class="endpoint-item">
+                            <div class="endpoint-description">Get Event Summary by ID</div>
+                            <div class="uri-template">GET /event_summary/{id}</div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/event_summary/', this)">
+                                <div class="form-group">
+                                    <label for="event-id">Event ID:</label>
+                                    <input type="text" id="event-id" name="event-id" value="1073">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
                             <div class="endpoint-description">Get Patient Records by ID</div>
                             <div class="uri-template">GET /patient/{id}</div>
                             <form class="api-form" onsubmit="callApiWithForm(event, '/patient/', this)">
@@ -255,6 +268,23 @@ fn index() -> RawHtml<String> {
                                 <div class="form-group">
                                     <label for="pt-id">Patient ID:</label>
                                     <input type="text" id="pt-id" name="pt-id" value="72290">
+                                </div>
+                                <button type="submit" class="btn">Send Request</button>
+                                <span class="response-time"></span>
+                            </form>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-description">Get Patient Timeline by ID</div>
+                            <div class="uri-template">GET /patient_timeline/{ptid}&<event_id_list></div>
+                            <form class="api-form" onsubmit="callApiWithForm(event, '/patient_timeline/', this)">
+                                <div class="form-group
+                                    <label for="ptid">Patient ID:</label>
+                                    <input type="text" id="ptid" name="ptid" value="72290">
+                                </div>
+                                <div class="form-group">
+                                    <label for="event_id_list">Event ID List (JSON array):</label>
+                                    <input type="text" id="event_id_list" name="event_id_list" value='["112","11272","66893"]'>
                                 </div>
                                 <button type="submit" class="btn">Send Request</button>
                                 <span class="response-time"></span>
@@ -575,9 +605,11 @@ fn rocket() -> _ {
             apis::event_api::get_event,
             apis::event_api::search_events,
             apis::event_api::get_event_detail,
+            apis::event_api::get_event_summary,
             apis::eii_api::eii_and,
             apis::patient_api::get_patient,
             apis::patient_api::get_patient_events,
+            apis::patient_api::get_patient_timeline,
             apis::temporal_query_api::efcfcd_diamond_v4_1,
             apis::event_api::search_events_by_omop,
             apis::eii_api::eii_and_omop,
